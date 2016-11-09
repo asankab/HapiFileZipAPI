@@ -1,0 +1,38 @@
+server.route({
+    method: 'GET',
+    path: '/zip',
+    handler: function (request, reply) {
+        //reply('Hello, ' + encodeURIComponent(request.params.name) + '!');
+
+        var fs = require('fs');
+        var sourcePath = '/home/asankab/epub';
+        var outputPath = __dirname + '/bulk-output.zip';
+
+        var output = fs.createWriteStream(outputPath);
+        var zipArchive = archiver('zip');
+
+        output.on('close', function () {
+            console.log(zipArchive.pointer() + ' total bytes');
+            console.log('done with the zip', outputPath);
+        });
+
+        zipArchive.on('error', function(err) {
+            throw err;
+        });
+
+        zipArchive.pipe(output);
+            zipArchive.bulk([
+                {src: ['**/*'], cwd: sourcePath, expand: true}
+            ]);
+
+        zipArchive.finalize(function (err, bytes) {
+            if (err) {
+                throw err;
+            }
+
+            console.log('done:', base, bytes);
+        });
+
+        reply();
+    }
+});
