@@ -29,23 +29,34 @@ server.route({
     }
 });
 
-server.route({
+/*server.route({
     method: 'GET',
     path: '/{name}',
     handler: function (request, reply) {
         reply('Hello, ' + encodeURIComponent(request.params.name) + '!');
     }
-});
+});*/
 
 server.route({
-    method: 'GET',
-    path: '/zip',
+    method: 'POST',
+    path: '/api/v1/activities',
     handler: function (request, reply) {
+
+        /*var payload = request.payload;
+        var activityGuids = JSON.stringify(payload);
+
+        console.log("activity Guids Array:" + activityGuids);
+        console.log("payload:" + payload);
+
+        activityGuids.forEach(function(activityID){
+            console.log("Activity ID:" + activityID);
+        });*/
+
         const sourceDirectoryPath = config.sourceDirectoryPath; //source directory to copy contents from
         const subDirectoriesToZip = config.subDirectoriesToZip; //directories to zip
         const destinationFolderPath = config.destinationFolderPath;
 
-        if(sourceDirectory == null){
+        if(sourceDirectoryPath == null){
             return reply('please set sourceDirectoryPath and retry').code(504);
         }
 
@@ -57,14 +68,24 @@ server.route({
             return reply('please set destinationFolderPath and retry').code(504);
         }
 
-        var fileZipResponse = utility.ZipFile(sourceDirectory, subDirectoriesToZip, destinationFolderPath);
-
+        var fileZipResponse = utility.ZipFile(sourceDirectoryPath, subDirectoriesToZip, destinationFolderPath);
         if(fileZipResponse != null){
             return reply({ "zipFileUrl": fileZipResponse.pathToZipFile,
                            "timeStamp": fileZipResponse.timeStamp }).code(200);
         }
 
         return reply().code(504);
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/api/v1/bundler/{param*}',
+    handler: {
+        directory: {
+            path: 'zipfilestore'//,
+            //listing: true
+        }
     }
 });
 
@@ -92,3 +113,5 @@ server.start((err) => {
  lookupCompressed: true // allow looking for script.js.gz if the request allows it
  }
  }*/
+
+//https://github.com/paullang/hapi-post-example

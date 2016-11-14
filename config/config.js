@@ -4,5 +4,5 @@
 module.exports = {
     sourceDirectoryPath: "/home/asankab/epub/",
     subDirectoriesToZip: ['img','js','templates'],
-    destinationFolderPath: "../BundlerFileStore"
+    destinationFolderPath: "zipfilestore"
 }
